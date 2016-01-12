@@ -69,7 +69,7 @@ namespace BalancedParentheses
                     }
                 }
 
-                return true;
+                return stack.Count == 0;
             }
         }
     }
