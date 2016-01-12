@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BalancedParentheses", "Bala
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SwapNodes", "SwapNodes\SwapNodes.csproj", "{2A31D6F9-90D4-477C-AD03-1140DF0B13B5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TruckTour", "TruckTour\TruckTour.csproj", "{9C8739D2-5938-4CC7-8473-EDD941D09C63}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{2A31D6F9-90D4-477C-AD03-1140DF0B13B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2A31D6F9-90D4-477C-AD03-1140DF0B13B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2A31D6F9-90D4-477C-AD03-1140DF0B13B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C8739D2-5938-4CC7-8473-EDD941D09C63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C8739D2-5938-4CC7-8473-EDD941D09C63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C8739D2-5938-4CC7-8473-EDD941D09C63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C8739D2-5938-4CC7-8473-EDD941D09C63}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
