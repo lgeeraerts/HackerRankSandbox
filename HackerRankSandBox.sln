@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TruckTour", "TruckTour\Truc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MatrixRotation", "MatrixRotation\MatrixRotation.csproj", "{FEDE8158-7D36-4DA7-BE7A-2B23EDBF8E5E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QHeap1", "QHeap1\QHeap1.csproj", "{9C96FC7E-8727-4855-9FC8-1247A0EEFAFC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{FEDE8158-7D36-4DA7-BE7A-2B23EDBF8E5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FEDE8158-7D36-4DA7-BE7A-2B23EDBF8E5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FEDE8158-7D36-4DA7-BE7A-2B23EDBF8E5E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C96FC7E-8727-4855-9FC8-1247A0EEFAFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C96FC7E-8727-4855-9FC8-1247A0EEFAFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C96FC7E-8727-4855-9FC8-1247A0EEFAFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C96FC7E-8727-4855-9FC8-1247A0EEFAFC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
