@@ -60,6 +60,7 @@ namespace QHeap1
 
                 public void Insert(int key)
                 {
+                    if (N == elements.Length) Grow();
                     elements[N] = key;
                     Heapify(N);
                     N++;                    
@@ -90,8 +91,8 @@ namespace QHeap1
                         return true;
                     }
 
-                    var leftChildPosition = position * 2;
-                    var rightChildPosition = leftChildPosition++;
+                    var leftChildPosition = position * 2 + 1;
+                    var rightChildPosition = leftChildPosition + 1;
 
                     var isRemovedInLeft = RemoveKeyStep(key, leftChildPosition);
                     var isRemovedInRight = isRemovedInLeft ? false : RemoveKeyStep(key, rightChildPosition);
@@ -113,7 +114,7 @@ namespace QHeap1
                         }
                     }
 
-                    var leftChildPosition = 2 * position;
+                    var leftChildPosition = 2 * position + 1;
 
                     if(leftChildPosition < N && elements[leftChildPosition] < elements[position])
                     {
