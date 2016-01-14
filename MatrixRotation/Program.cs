@@ -64,12 +64,13 @@ namespace MatrixRotation
                 var width = bottomRight.x - topLeft.x + 1;
                 var height = bottomRight.y - topLeft.y + 1;
                 int totalPositions = 2 * width + 2 * (height - 2);
+                var adjustedRotations = rotations % totalPositions;
 
                 var currentPoint = new Point(topLeft.x, topLeft.y);
 
                 for (int i = 0; i < totalPositions; i++)
                 {
-                    var targetPoint = CalculateTargetPoint(currentPoint, rotations, topLeft, bottomRight);
+                    var targetPoint = CalculateTargetPoint(currentPoint, adjustedRotations, topLeft, bottomRight);
 
                     resultMatrix[targetPoint.y][targetPoint.x] = matrix[currentPoint.y][currentPoint.x];
 
@@ -90,9 +91,7 @@ namespace MatrixRotation
                         // move left
                         currentPoint.x--;
                     }
-                }
-
-                var adjustedRotations = rotations % totalPositions;
+                }                
             }
 
             private Point CalculateTargetPoint(Point currentPoint, int rotations, Point topLeft, Point bottomRight)
