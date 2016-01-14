@@ -33,17 +33,24 @@ namespace SherlockAndArray
         {
             public void Process(int[] array)
             {
-                var total = array.Sum();
+                var containsEqualParts = false;
 
-                var remaining = total - array[0] - array[1];
-                var counted = array[0];
+                if (array.Length == 1) containsEqualParts = true;
+                else if (array.Length == 2) containsEqualParts = false;
+                else
+                {
+                    long total = array.Sum();
 
-                var containsEqualParts = ProcessStep(array, 1, counted, remaining);
+                    var remaining = total - array[0] - array[1];
+                    var counted = array[0];
+
+                    containsEqualParts = ProcessStep(array, 1, counted, remaining);
+                }
 
                 Console.WriteLine(containsEqualParts ? "YES" : "NO");
             }
             
-            private bool ProcessStep(int[] array, int position, int counted, int remaining)
+            private bool ProcessStep(int[] array, int position, int counted, long remaining)
             {
                 if(counted == remaining)
                 {
