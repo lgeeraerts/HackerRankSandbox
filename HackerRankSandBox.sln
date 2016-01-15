@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QHeap1", "QHeap1\QHeap1.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SherlockAndArray", "SherlockAndArray\SherlockAndArray.csproj", "{F0545F4D-9642-4757-B745-F41177A7A9CD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Starfleet", "Starfleet\Starfleet.csproj", "{F7A1B03F-2109-4EC6-9AA3-3F519702B5E9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{F0545F4D-9642-4757-B745-F41177A7A9CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F0545F4D-9642-4757-B745-F41177A7A9CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F0545F4D-9642-4757-B745-F41177A7A9CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7A1B03F-2109-4EC6-9AA3-3F519702B5E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7A1B03F-2109-4EC6-9AA3-3F519702B5E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7A1B03F-2109-4EC6-9AA3-3F519702B5E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7A1B03F-2109-4EC6-9AA3-3F519702B5E9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
