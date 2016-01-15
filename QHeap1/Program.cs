@@ -124,7 +124,7 @@ namespace QHeap1
                 {
                     if (position > 0)
                     {
-                        var parentPosition = position / 2;
+                        var parentPosition = ((position + 1) / 2) - 1;
 
                         if (elements[parentPosition] > elements[position])
                         {
