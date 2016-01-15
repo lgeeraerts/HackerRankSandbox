@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,6 +22,8 @@ namespace QHeap1
 
                 commands[i] = new int[] { command, argument };
             }
+
+            Console.SetOut(new StreamWriter(new FileStream("./output.txt", FileMode.OpenOrCreate)));
 
             var algorithm = new Algorithm();
             algorithm.Process(commands);
@@ -62,7 +65,7 @@ namespace QHeap1
                 {
                     if (N == elements.Length) Grow();
                     elements[N] = key;
-                    Heapify(N);
+                    Swim(N);
                     N++;                    
                 }
 
@@ -87,7 +90,7 @@ namespace QHeap1
                     {
                         elements[position] = elements[N - 1];
                         N--;
-                        Heapify(position);
+                        Sink(position);
                         return true;
                     }
 
@@ -100,7 +103,24 @@ namespace QHeap1
                     return isRemovedInLeft || isRemovedInRight;
                 }
 
-                private void Heapify(int position)
+                private void Sink(int position)
+                {
+                    var leftChildPosition = 2 * position + 1;
+                    var rightChildPosition = leftChildPosition + 1;
+                    var positionOfSmallest = 0;
+
+                    if (leftChildPosition < N && elements[leftChildPosition] < elements[position]) positionOfSmallest = leftChildPosition;
+                    else positionOfSmallest = position;
+
+                    if (rightChildPosition < N && elements[rightChildPosition] < elements[positionOfSmallest]) positionOfSmallest = rightChildPosition;
+                    if (positionOfSmallest != position)
+                    {
+                        SwitchElements(position, positionOfSmallest);
+                        Sink(positionOfSmallest);
+                    }
+                }
+
+                private void Swim(int position)
                 {
                     if (position > 0)
                     {
@@ -109,26 +129,8 @@ namespace QHeap1
                         if (elements[parentPosition] > elements[position])
                         {
                             SwitchElements(position, parentPosition);
-                            Heapify(parentPosition);
-                            return;
+                            Swim(parentPosition);
                         }
-                    }
-
-                    var leftChildPosition = 2 * position + 1;
-
-                    if(leftChildPosition < N && elements[leftChildPosition] < elements[position])
-                    {
-                        SwitchElements(position, leftChildPosition);
-                        Heapify(leftChildPosition);
-                        return;
-                    }
-
-                    var rightChildPosition = leftChildPosition + 1;
-
-                    if(rightChildPosition < N && elements[rightChildPosition] < elements[position])
-                    {
-                        SwitchElements(position, rightChildPosition);
-                        Heapify(rightChildPosition);
                     }
                 }
 
