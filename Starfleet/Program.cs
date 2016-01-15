@@ -23,7 +23,9 @@ namespace Starfleet
                 starFighters[i] = new StarFighter(Convert.ToInt32(segments[0]), Convert.ToInt32(segments[1]), Convert.ToInt32(segments[2]));
             }
 
-            var queries = new Query[N];
+            starFighters = starFighters.OrderBy(sf => sf.y).ToArray();
+
+            var queries = new Query[Q];
 
             for (int i = 0; i < Q; i++)
             {
@@ -33,10 +35,14 @@ namespace Starfleet
 
             var algorithm = new Algorithm(starFighters);
 
+            var stopWatch = new System.Diagnostics.Stopwatch();
+            stopWatch.Start();
             foreach (var query in queries)
             {
                 algorithm.Process(query);
             }
+            stopWatch.Stop();
+            Console.WriteLine("Time: " + stopWatch.ElapsedMilliseconds);
         }
 
         private class Algorithm
@@ -61,9 +67,13 @@ namespace Starfleet
 
             private void FilterStarFightersAndCountFrequencies(Query query)
             {
-                foreach (var sf in starFighters)
+                var beginPosition = FindPositionOrFirstBeforeOrAfter(0, starFighters.Length - 1, query.dy, true);
+                var endPosition = FindPositionOrFirstBeforeOrAfter(beginPosition, starFighters.Length - 1, query.uy, false);
+
+                for (int i = beginPosition; i <= endPosition; i++)
                 {
-                    if (query.Contains(sf)) {
+                    var sf = starFighters[i]; if (query.Contains(sf))
+                    {
                         if (frequencyCount.ContainsKey(sf.f))
                         {
                             frequencyCount[sf.f] = frequencyCount[sf.f] + 1;
@@ -78,7 +88,29 @@ namespace Starfleet
 
             private int FindHighestFrequencyCount()
             {
-                return frequencyCount.Values.Max();
+                return frequencyCount.Values.Count == 0 ? 0 : frequencyCount.Values.Max();
+            }
+
+            private int FindPositionOrFirstBeforeOrAfter(int start, int end, int key, bool firstAfter)
+            {
+                while (start < end) {
+                    var mid = (start + end) / 2;
+                    var midKey = starFighters[mid].y;
+
+                    if (midKey == key) return mid;
+                    else if (key < midKey) end = mid - 1;
+                    else start = mid + 1;
+                }
+                
+                var sf = starFighters[start];
+                if (sf.y == key) return start;
+                else
+                {
+                    var pos = firstAfter ? start + 1 : start - 1;
+                    if (pos < 0) pos = 0;
+                    else if (pos >= starFighters.Length) pos = starFighters.Length - 1;
+                    return pos;
+                }
             }
         }
 
