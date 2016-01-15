@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -35,14 +36,16 @@ namespace Starfleet
 
             var algorithm = new Algorithm(starFighters);
 
-            var stopWatch = new System.Diagnostics.Stopwatch();
-            stopWatch.Start();
+            //Console.SetOut(new StreamWriter(new FileStream("./output.txt", FileMode.OpenOrCreate)));
+
+            //var stopWatch = new System.Diagnostics.Stopwatch();
+            //stopWatch.Start();
             foreach (var query in queries)
             {
                 algorithm.Process(query);
             }
-            stopWatch.Stop();
-            Console.WriteLine("Time: " + stopWatch.ElapsedMilliseconds);
+            //stopWatch.Stop();
+            //Console.WriteLine("Time: " + stopWatch.ElapsedMilliseconds);
         }
 
         private class Algorithm
