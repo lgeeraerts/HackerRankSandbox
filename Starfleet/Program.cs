@@ -17,11 +17,22 @@ namespace Starfleet
             var V = Convert.ToInt32(segments[2]);
 
             var starFighters = new StarFighter[N];
+            var frequencyDictionary = new Dictionary<int, Counter>();
+            var frequencyCounterList = new List<Counter>();
 
             for (int i = 0; i < N; i++)
             {
                 segments = (Console.ReadLine()).Split(' ');
-                starFighters[i] = new StarFighter(Convert.ToInt32(segments[0]), Convert.ToInt32(segments[1]), Convert.ToInt32(segments[2]));
+                var frequency = Convert.ToInt32(segments[2]);
+                var sf = new StarFighter(Convert.ToInt32(segments[0]), Convert.ToInt32(segments[1]), frequency);
+                starFighters[i] = sf;
+                if (!frequencyDictionary.ContainsKey(frequency))
+                {
+                    var frequencyCounter = new Counter();
+                    frequencyDictionary.Add(frequency, frequencyCounter);
+                    frequencyCounterList.Add(frequencyCounter);
+                    sf.frequencyCounter = frequencyCounter;
+                }
             }
 
             starFighters = starFighters.OrderBy(sf => sf.y).ToArray();
@@ -34,66 +45,58 @@ namespace Starfleet
                 queries[i] = new Query(Convert.ToInt32(segments[0]), Convert.ToInt32(segments[1]), Convert.ToInt32(segments[2]));
             }
 
-            var algorithm = new Algorithm(starFighters);
+            var algorithm = new Algorithm(starFighters, frequencyCounterList);
 
-            //Console.SetOut(new StreamWriter(new FileStream("./output.txt", FileMode.OpenOrCreate)));
+            Console.SetOut(new StreamWriter(new FileStream("./output.txt", FileMode.OpenOrCreate)));
 
-            //var stopWatch = new System.Diagnostics.Stopwatch();
-            //stopWatch.Start();
+            var stopWatch = new System.Diagnostics.Stopwatch();
+            stopWatch.Start();
             foreach (var query in queries)
             {
                 algorithm.Process(query);
             }
-            //stopWatch.Stop();
-            //Console.WriteLine("Time: " + stopWatch.ElapsedMilliseconds);
+            stopWatch.Stop();
+            Console.WriteLine("Time: " + stopWatch.ElapsedMilliseconds);
         }
 
         private class Algorithm
         {
             private StarFighter[] starFighters;
-            private Dictionary<int, int> frequencyCount;
+            private List<Counter> frequencyCount;
             
-            public Algorithm(StarFighter[] starFighters)
+            public Algorithm(StarFighter[] starFighters, List<Counter> frequencyCounterList)
             {
                 this.starFighters = starFighters;
-                this.frequencyCount = new Dictionary<int, int>();
+                this.frequencyCount = frequencyCounterList;
             }
 
             public void Process(Query query)
             {
-                this.frequencyCount.Clear();
+                foreach (var counter in frequencyCount)
+                {
+                    counter.Count = 0;
+                }            
 
-                this.FilterStarFightersAndCountFrequencies(query);
-
-                Console.WriteLine(FindHighestFrequencyCount());
+                Console.WriteLine(this.FilterStarFightersAndCountFrequencies(query));
             }
 
-            private void FilterStarFightersAndCountFrequencies(Query query)
+            private int FilterStarFightersAndCountFrequencies(Query query)
             {
                 var beginPosition = FindPositionOrFirstBeforeOrAfter(0, starFighters.Length - 1, query.dy, true);
                 var endPosition = FindPositionOrFirstBeforeOrAfter(beginPosition, starFighters.Length - 1, query.uy, false);
 
+                var max = 0;
+
                 for (int i = beginPosition; i <= endPosition; i++)
                 {
-                    var sf = starFighters[i]; if (query.Contains(sf))
-                    {
-                        if (frequencyCount.ContainsKey(sf.f))
-                        {
-                            frequencyCount[sf.f] = frequencyCount[sf.f] + 1;
-                        }
-                        else
-                        {
-                            frequencyCount.Add(sf.f, 1);
-                        }
-                    }
+                    var sf = starFighters[i];
+                    sf.frequencyCounter.Count++;
+                    max = Math.Max(max, sf.frequencyCounter.Count);
                 }
-            }
 
-            private int FindHighestFrequencyCount()
-            {
-                return frequencyCount.Values.Count == 0 ? 0 : frequencyCount.Values.Max();
+                return max;
             }
-
+            
             private int FindPositionOrFirstBeforeOrAfter(int start, int end, int key, bool firstAfter)
             {
                 while (start < end) {
@@ -129,6 +132,7 @@ namespace Starfleet
             public int x;
             public int y;
             public int f;
+            public Counter frequencyCounter;
         }
 
         private class Query
@@ -148,6 +152,11 @@ namespace Starfleet
             public int uy;
             public int dy;
             public int t;
+        }
+
+        private class Counter
+        {
+            public int Count = 0;
         }
     }
 }
