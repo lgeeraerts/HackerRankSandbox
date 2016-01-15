@@ -23,7 +23,7 @@ namespace QHeap1
                 commands[i] = new int[] { command, argument };
             }
 
-            Console.SetOut(new StreamWriter(new FileStream("./output.txt", FileMode.OpenOrCreate)));
+            //Console.SetOut(new StreamWriter(new FileStream("./output.txt", FileMode.OpenOrCreate)));
 
             var algorithm = new Algorithm();
             algorithm.Process(commands);
