@@ -33,6 +33,10 @@ namespace Starfleet
                     frequencyCounterList.Add(frequencyCounter);
                     sf.frequencyCounter = frequencyCounter;
                 }
+                else
+                {
+                    sf.frequencyCounter = frequencyDictionary[frequency];
+                }
             }
 
             starFighters = starFighters.OrderBy(sf => sf.y).ToArray();
@@ -47,16 +51,16 @@ namespace Starfleet
 
             var algorithm = new Algorithm(starFighters, frequencyCounterList);
 
-            Console.SetOut(new StreamWriter(new FileStream("./output.txt", FileMode.OpenOrCreate)));
+            //Console.SetOut(new StreamWriter(new FileStream("./output.txt", FileMode.OpenOrCreate)));
 
-            var stopWatch = new System.Diagnostics.Stopwatch();
-            stopWatch.Start();
+            //var stopWatch = new System.Diagnostics.Stopwatch();
+            //stopWatch.Start();
             foreach (var query in queries)
             {
                 algorithm.Process(query);
             }
-            stopWatch.Stop();
-            Console.WriteLine("Time: " + stopWatch.ElapsedMilliseconds);
+            //stopWatch.Stop();
+            //Console.WriteLine("Time: " + stopWatch.ElapsedMilliseconds);
         }
 
         private class Algorithm
@@ -103,7 +107,7 @@ namespace Starfleet
                     var mid = (start + end) / 2;
                     var midKey = starFighters[mid].y;
 
-                    if (midKey == key) return mid;
+                    if (midKey == key) return SearchUpOrDown(mid, key, firstAfter);
                     else if (key < midKey) end = mid - 1;
                     else start = mid + 1;
                 }
@@ -117,6 +121,19 @@ namespace Starfleet
                     else if (pos >= starFighters.Length) pos = starFighters.Length - 1;
                     return pos;
                 }
+            }
+
+            private int SearchUpOrDown(int position, int key, bool down)
+            {
+                var pos = position;
+                var nextpos = down ? pos - 1 : pos + 1;
+                while (nextpos >= 0 && nextpos < starFighters.Length && starFighters[nextpos].y == key)
+                {
+                    pos = nextpos;
+                    if (down) nextpos--; else nextpos++;
+                }
+
+                return pos;
             }
         }
 
