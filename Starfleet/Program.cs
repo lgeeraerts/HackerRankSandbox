@@ -20,8 +20,6 @@ namespace Starfleet
             var V = Convert.ToInt32(segments[2]);
 
             var starFighters = new StarFighter[N];
-            var frequencyDictionary = new Dictionary<int, Counter>();
-            var frequencyCounterList = new List<Counter>();
 
             for (int i = 0; i < N; i++)
             {
@@ -29,21 +27,10 @@ namespace Starfleet
                 var frequency = Convert.ToInt32(segments[2]);
                 var sf = new StarFighter(Convert.ToInt32(segments[0]), Convert.ToInt32(segments[1]), frequency);
                 starFighters[i] = sf;
-                if (!frequencyDictionary.ContainsKey(frequency))
-                {
-                    var frequencyCounter = new Counter();
-                    frequencyDictionary.Add(frequency, frequencyCounter);
-                    frequencyCounterList.Add(frequencyCounter);
-                    sf.frequencyCounter = frequencyCounter;
-                }
-                else
-                {
-                    sf.frequencyCounter = frequencyDictionary[frequency];
-                }
             }
 
-            starFighters = starFighters.OrderBy(sf => sf.y).ToArray();
-
+            var sfByFrequency = starFighters.GroupBy(sf => sf.f, sf => sf).Select(g => g.OrderBy(sf => sf.y).ToArray()).ToArray();
+            
             var queries = new int[Q][];
 
             for (int i = 0; i < Q; i++)
@@ -52,7 +39,7 @@ namespace Starfleet
                 queries[i] = new int[] { Convert.ToInt32(segments[0]), Convert.ToInt32(segments[1]), Convert.ToInt32(segments[2]) };
             }
 
-            var algorithm = new Algorithm(starFighters, frequencyCounterList);
+            var algorithm = new Algorithm(sfByFrequency);
 
             initStopWatch.Stop();
 
@@ -70,69 +57,71 @@ namespace Starfleet
 
         private class Algorithm
         {
-            private StarFighter[] starFighters;
-            private List<Counter> frequencyCount;
+            private StarFighter[][] starFighters;
             
-            public Algorithm(StarFighter[] starFighters, List<Counter> frequencyCounterList)
+            public Algorithm(StarFighter[][] starFighters)
             {
                 this.starFighters = starFighters;
-                this.frequencyCount = frequencyCounterList;
             }
 
             public void Process(int[] query)
             {
-                foreach (var counter in frequencyCount)
-                {
-                    counter.Count = 0;
-                }            
-
                 Console.WriteLine(this.FilterStarFightersAndCountFrequencies(query));
             }
 
             private int FilterStarFightersAndCountFrequencies(int[] query)
             {
-                var beginPosition = FindPositionOrFirstBeforeOrAfter(0, starFighters.Length - 1, query[1], true);
-                var endPosition = FindPositionOrFirstBeforeOrAfter(beginPosition, starFighters.Length - 1, query[0], false);
-
                 var max = 0;
 
-                for (int i = beginPosition; i <= endPosition; i++)
+                foreach (var frSfList in starFighters)
                 {
-                    var sf = starFighters[i];
-                    sf.frequencyCounter.Count++;
-                    max = Math.Max(max, sf.frequencyCounter.Count);
+                    var beginPosition = FindPositionOrFirstBeforeOrAfter(0, frSfList.Length - 1, query[1], true, frSfList);
+                    var endPosition = FindPositionOrFirstBeforeOrAfter(beginPosition, frSfList.Length - 1, query[0], false, frSfList);
+
+                    var size = endPosition < beginPosition ? 0 : endPosition == beginPosition ? 1 : endPosition - beginPosition + 1;
+
+                    max = Math.Max(max, size);
                 }
 
                 return max;
             }
             
-            private int FindPositionOrFirstBeforeOrAfter(int start, int end, int key, bool firstAfter)
+            private int FindPositionOrFirstBeforeOrAfter(int start, int end, int key, bool firstAfter, StarFighter[] list)
             {
                 while (start < end) {
                     var mid = (start + end) / 2;
-                    var midKey = starFighters[mid].y;
+                    var midKey = list[mid].y;
 
-                    if (midKey == key) return SearchUpOrDown(mid, key, firstAfter);
+                    if (midKey == key) return SearchUpOrDown(mid, key, firstAfter, list);
                     else if (key < midKey) end = mid - 1;
                     else start = mid + 1;
                 }
                 
-                var sf = starFighters[start];
+                var sf = list[start];
                 if (sf.y == key) return start;
                 else
                 {
-                    var pos = firstAfter ? start + 1 : start - 1;
-                    if (pos < 0) pos = 0;
-                    else if (pos >= starFighters.Length) pos = starFighters.Length - 1;
+                    var pos = 0;
+                    if (firstAfter)
+                    {
+                        pos = sf.y > key ? start : start + 1;
+                        if (pos >= list.Length) pos = list.Length - 1;
+                    }
+                    else
+                    {
+                        pos = sf.y < key ? start : start - 1;
+                        if (pos < 0) pos = 0;
+                    }
+                    
                     return pos;
                 }
             }
 
-            private int SearchUpOrDown(int position, int key, bool down)
+            private int SearchUpOrDown(int position, int key, bool down, StarFighter[] list)
             {
                 var pos = position;
                 var nextpos = down ? pos - 1 : pos + 1;
-                while (nextpos >= 0 && nextpos < starFighters.Length && starFighters[nextpos].y == key)
+                while (nextpos >= 0 && nextpos < list.Length && list[nextpos].y == key)
                 {
                     pos = nextpos;
                     if (down) nextpos--; else nextpos++;
