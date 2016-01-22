@@ -143,12 +143,6 @@ namespace Starfleet
             public int x;
             public int y;
             public int f;
-            public Counter frequencyCounter;
-        }
-
-        private class Counter
-        {
-            public int Count = 0;
         }
     }
 }
