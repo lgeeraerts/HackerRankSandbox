@@ -11,6 +11,9 @@ namespace Starfleet
     {
         static void Main(string[] args)
         {
+            var initStopWatch = new System.Diagnostics.Stopwatch();
+            initStopWatch.Start();
+
             var segments = (Console.ReadLine()).Split(' ');
             var N = Convert.ToInt32(segments[0]);
             var Q = Convert.ToInt32(segments[1]);
@@ -41,26 +44,28 @@ namespace Starfleet
 
             starFighters = starFighters.OrderBy(sf => sf.y).ToArray();
 
-            var queries = new Query[Q];
+            var queries = new int[Q][];
 
             for (int i = 0; i < Q; i++)
             {
                 segments = (Console.ReadLine()).Split(' ');
-                queries[i] = new Query(Convert.ToInt32(segments[0]), Convert.ToInt32(segments[1]), Convert.ToInt32(segments[2]));
+                queries[i] = new int[] { Convert.ToInt32(segments[0]), Convert.ToInt32(segments[1]), Convert.ToInt32(segments[2]) };
             }
 
             var algorithm = new Algorithm(starFighters, frequencyCounterList);
 
-            //Console.SetOut(new StreamWriter(new FileStream("./output.txt", FileMode.OpenOrCreate)));
+            initStopWatch.Stop();
 
-            //var stopWatch = new System.Diagnostics.Stopwatch();
-            //stopWatch.Start();
+            Console.SetOut(new StreamWriter(new FileStream("./output.txt", FileMode.OpenOrCreate)));
+
+            var stopWatch = new System.Diagnostics.Stopwatch();
+            stopWatch.Start();
             foreach (var query in queries)
             {
                 algorithm.Process(query);
             }
-            //stopWatch.Stop();
-            //Console.WriteLine("Time: " + stopWatch.ElapsedMilliseconds);
+            stopWatch.Stop();
+            Console.WriteLine("Time: " + stopWatch.ElapsedMilliseconds);
         }
 
         private class Algorithm
@@ -74,7 +79,7 @@ namespace Starfleet
                 this.frequencyCount = frequencyCounterList;
             }
 
-            public void Process(Query query)
+            public void Process(int[] query)
             {
                 foreach (var counter in frequencyCount)
                 {
@@ -84,10 +89,10 @@ namespace Starfleet
                 Console.WriteLine(this.FilterStarFightersAndCountFrequencies(query));
             }
 
-            private int FilterStarFightersAndCountFrequencies(Query query)
+            private int FilterStarFightersAndCountFrequencies(int[] query)
             {
-                var beginPosition = FindPositionOrFirstBeforeOrAfter(0, starFighters.Length - 1, query.dy, true);
-                var endPosition = FindPositionOrFirstBeforeOrAfter(beginPosition, starFighters.Length - 1, query.uy, false);
+                var beginPosition = FindPositionOrFirstBeforeOrAfter(0, starFighters.Length - 1, query[1], true);
+                var endPosition = FindPositionOrFirstBeforeOrAfter(beginPosition, starFighters.Length - 1, query[0], false);
 
                 var max = 0;
 
@@ -150,25 +155,6 @@ namespace Starfleet
             public int y;
             public int f;
             public Counter frequencyCounter;
-        }
-
-        private class Query
-        {
-            public Query(int uy, int dy, int t)
-            {
-                this.uy = uy;
-                this.dy = dy;
-                this.t = t;
-            }
-
-            public bool Contains(StarFighter starFighter)
-            {
-                return starFighter.y <= this.uy && starFighter.y >= this.dy;
-            }
-
-            public int uy;
-            public int dy;
-            public int t;
         }
 
         private class Counter
