@@ -9,14 +9,34 @@ namespace Starfleet
 {
     class Solution
     {
+        private static StarFighter[] starFighters;
+        private static int[][] queries;
+        private static Algorithm algorithm;
+
         static void Main(string[] args)
+        {
+            ParseInput();
+
+            var sfByFrequency = starFighters.GroupBy(sf => sf.f, sf => sf).Select(g => g.OrderBy(sf => sf.y).ToArray()).ToArray();
+
+            algorithm = new Algorithm(sfByFrequency);
+
+            RunAlgorithmInParallel();
+
+            foreach (var query in queries)
+            {
+                Console.WriteLine(query[3]);
+            }
+        }
+
+        private static void ParseInput()
         {
             var segments = (Console.ReadLine()).Split(' ');
             var N = Convert.ToInt32(segments[0]);
             var Q = Convert.ToInt32(segments[1]);
             var V = Convert.ToInt32(segments[2]);
 
-            var starFighters = new StarFighter[N];
+            starFighters = new StarFighter[N];
 
             for (int i = 0; i < N; i++)
             {
@@ -26,24 +46,23 @@ namespace Starfleet
                 starFighters[i] = sf;
             }
 
-            var sfByFrequency = starFighters.GroupBy(sf => sf.f, sf => sf).Select(g => g.OrderBy(sf => sf.y).ToArray()).ToArray();
-            
-            var queries = new int[Q][];
+            queries = new int[Q][];
 
             for (int i = 0; i < Q; i++)
             {
                 segments = (Console.ReadLine()).Split(' ');
                 queries[i] = new int[] { Convert.ToInt32(segments[0]), Convert.ToInt32(segments[1]), Convert.ToInt32(segments[2]), 0 };
             }
+        }
 
-            var algorithm = new Algorithm(sfByFrequency);
-
+        private static void RunAlgorithmInParallel()
+        {
             var tasks = new Task[Environment.ProcessorCount];
             var interval = queries.Length / Environment.ProcessorCount;
             for (int i = 0; i < Environment.ProcessorCount; i++)
-            {                
+            {
                 var start = i * interval;
-                var end = i == Environment.ProcessorCount - 1 ? queries.Length :  start + interval;
+                var end = i == Environment.ProcessorCount - 1 ? queries.Length : start + interval;
                 tasks[i] = new Task(() => {
                     for (int j = start; j < end; j++)
                     {
@@ -51,15 +70,10 @@ namespace Starfleet
                     }
                 });
 
-                tasks[i].Start();                
+                tasks[i].Start();
             }
 
             Task.WaitAll(tasks);
-
-            foreach (var query in queries)
-            {
-                Console.WriteLine(query[3]);
-            }
         }
 
         private class Algorithm
