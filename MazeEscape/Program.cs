@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace MazeEscape
 {
@@ -10,21 +11,43 @@ namespace MazeEscape
     {
         static void Main(string[] args)
         {
-            var p1 = new GameState();
-            var p2 = new GameState();
+            var isInit = false;
 
-            p1.Init(new Move());
-            p2.Init(new Move());
+            var s = ReadState(out isInit);
 
-            while (!p1.IsDone && !p2.IsDone)
+            var move = new Move();
+            if (isInit) s.Init(move);
+
+            SaveState(s);            
+        }
+
+        public static void SaveState(GameState state)
+        {
+            using (Stream stream = File.Open("myFile.txt", FileMode.Create))
             {
-                var move = new Move();
-                var s = move.player == 1 ? p1 : p2;
-
-                s.Move(move);
+                var binaryFormatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+                binaryFormatter.Serialize(stream, state);
             }
         }
 
+        public static GameState ReadState(out bool isInit)
+        {
+            if (!File.Exists("myFile.txt")) {
+                isInit = true;
+                return new GameState();
+            }
+
+            isInit = false;
+
+            using (Stream stream = File.Open("myFile.txt", FileMode.Open))
+            {
+                var binaryFormatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+                return (GameState)binaryFormatter.Deserialize(stream);
+            }
+        }
+
+
+        [Serializable]
         public class GameState
         {
             public bool IsDone = false;
@@ -33,7 +56,6 @@ namespace MazeEscape
             private bool[,] mazeVisited = new bool[60, 60];
             private int pX = 30, pY = 30;
             private int d = 1;
-            private int eX, eY;
 
             private PathFinder pathFinder;
             private List<PointAndDirection> currentPath = null;
