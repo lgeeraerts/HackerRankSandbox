@@ -13,15 +13,15 @@ namespace MazeEscape
             var p1 = new GameState();
             var p2 = new GameState();
 
-            var p1InitView = new Move();
-            var p2InitView = new Move();
+            p1.Init(new Move());
+            p2.Init(new Move());
 
-            while(! p1.IsDone && !p2.IsDone)
+            while (!p1.IsDone && !p2.IsDone)
             {
                 var move = new Move();
                 var s = move.player == 1 ? p1 : p2;
 
-                s.ApplyMove(move);
+                s.Move(move);
             }
         }
 
@@ -33,15 +33,19 @@ namespace MazeEscape
             private int pX = 30, pY = 30;
             private int d = 1;
 
-            public void ApplyMove(Move move)
+            public void Move(Move move)
             {
+                ApplyMove(move);
+
 
             }
 
-            public void ApplyView(char[][] view)
+            public void Init(Move move)
             {
                 var left = pX - 1;
                 var top = pY - 1;
+
+                var view = move.view;
 
                 for (int i = 0; i < 3; i++)
                 {
@@ -49,6 +53,37 @@ namespace MazeEscape
                     {
                         maze[top + j, left + i] = view[j][i];
                     }
+                }
+            }
+
+            private void ApplyMove(Move move)
+            {
+                switch (d)
+                {
+                    case 1:
+                        pY--;
+                        maze[pY - 1, pX - 1] = move.view[0][0];
+                        maze[pY - 1, pX] = move.view[0][1];
+                        maze[pY - 1, pX + 1] = move.view[0][2];
+                        break;
+                    case 2:
+                        pX++;
+                        maze[pY - 1, pX + 1] = move.view[0][0];
+                        maze[pY, pX + 1] = move.view[0][1];
+                        maze[pY + 1, pX + 1] = move.view[0][2];
+                        break;
+                    case 3:
+                        pY++;
+                        maze[pY + 1, pX - 1] = move.view[0][2];
+                        maze[pY + 1, pX] = move.view[0][1];
+                        maze[pY + 1, pX + 1] = move.view[0][0];
+                        break;
+                    case 4:
+                        pX--;
+                        maze[pY - 1, pX - 1] = move.view[0][2];
+                        maze[pY, pX - 1] = move.view[0][1];
+                        maze[pY + 1, pX - 1] = move.view[0][1];
+                        break;
                 }
             }
         }
@@ -63,22 +98,6 @@ namespace MazeEscape
                 var bot = Console.ReadLine();
 
                 view = new char[][] { top.ToCharArray(), mid.ToCharArray(), bot.ToCharArray() };
-            }
-
-            public void RotateIfNeeded(int direction)
-            {
-                if(direction == 2)
-                {
-                    view = 
-                }
-                else if(direction == 3)
-                {
-                    
-                }
-                else if(direction == 4)
-                {
-
-                }
             }
 
             public int player;
