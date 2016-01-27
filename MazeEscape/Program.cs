@@ -135,6 +135,7 @@ namespace MazeEscape
             private void ApplyVisit()
             {
                 mazeVisited[pY, pX] = true;
+                pathFinder.CheckPriority();
             }
 
             private void GetNextMove()
@@ -272,6 +273,9 @@ namespace MazeEscape
             private bool[,] mazeVisits = new bool[60, 60];
             private bool[,] mazeEnqueued;
 
+            private int[] priority = new int[] { 4, 3, 1, 2 };
+            private bool isPriorityFound = false;
+
             public List<PointAndDirection> FindPath(Point currentPoint)
             {
                 paths.Clear();
@@ -304,15 +308,17 @@ namespace MazeEscape
             {
                 var currentPoint = startPoint ?? path.Last().point;
 
-                var up = currentPoint.Up();
-                var right = currentPoint.Right();
-                var down = currentPoint.Down();
-                var left = currentPoint.Left();
+                var targetPoint = new PointAndDirection[4];
+                targetPoint[0] = currentPoint.Up();
+                targetPoint[1] = currentPoint.Right();
+                targetPoint[2] = currentPoint.Down();
+                targetPoint[3] = currentPoint.Left();
 
-                if (IsEnqueuable(up.point)) paths.Enqueue(CloneListAndAddElement(path, up));
-                if (IsEnqueuable(right.point)) paths.Enqueue(CloneListAndAddElement(path, right));
-                if (IsEnqueuable(down.point)) paths.Enqueue(CloneListAndAddElement(path, down));
-                if (IsEnqueuable(left.point)) paths.Enqueue(CloneListAndAddElement(path, left));
+                foreach (var p in priority)
+                {
+                    var tp = targetPoint.First(pd => pd.direction == p);
+                    if (IsEnqueuable(tp.point)) paths.Enqueue(CloneListAndAddElement(path, tp));
+                }
             }
 
             private List<PointAndDirection> CloneListAndAddElement(List<PointAndDirection> list, PointAndDirection el)
@@ -336,6 +342,78 @@ namespace MazeEscape
             private bool IsValidPoint(Point p)
             {
                 return maze[p.y, p.x] != '#' && mazeVisits[p.y, p.x];
+            }
+
+            public void CheckPriority()
+            {
+                if (isPriorityFound) return;
+
+                var center = new Point(30, 30);
+
+                var upT = ReturnTypeOfDirection(center, 1);
+                if (upT == 1)
+                {
+                    priority = new int[] { 2, 1, 3, 4 };
+                    isPriorityFound = true;
+                };
+
+                var rightT = ReturnTypeOfDirection(center, 2);
+                if (rightT == 1) {
+                    priority = new int[] { 3, 2, 4, 1 };
+                    isPriorityFound = true;
+                };
+
+                var downT = ReturnTypeOfDirection(center, 3);
+                if (downT == 1)
+                {
+                    priority = new int[] { 4, 3, 1, 2 };
+                    isPriorityFound = true;
+                };
+
+                var leftT = ReturnTypeOfDirection(center, 4);
+                if (leftT == 1)
+                {
+                    priority = new int[] { 1, 4, 2, 3 };
+                    isPriorityFound = true;
+                };
+            }
+
+            private int ReturnPriorityType(Point p)
+            {
+                var t = maze[p.y, p.x];
+                if (t == '#') return 0;
+                else if (t == '-') return 1;
+                else return 2;
+            }
+
+            private int ReturnTypeOfDirection(Point p, int d)
+            {
+                var cp = p;
+
+                for (int i = 0; i < 2; i++)
+                {
+                    switch (d)
+                    {
+                        case 1:
+                            cp = cp.Up().point;
+                            break;
+                        case 2:
+                            cp = cp.Right().point;
+                            break;
+                        case 3:
+                            cp = cp.Down().point;
+                            break;
+                        case 4:
+                            cp = cp.Left().point;
+                            break;
+                    }
+
+                    var pt = ReturnPriorityType(cp);
+                    if (pt == 0) return 0;
+                    if (pt == 2) return 2;
+                }
+
+                return 1;
             }
         }
     }
