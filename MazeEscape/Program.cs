@@ -17,6 +17,7 @@ namespace MazeEscape
 
             var move = new Move();
             if (isInit) s.Init(move);
+            else s.Move(move);
 
             SaveState(s);            
         }
@@ -75,29 +76,7 @@ namespace MazeEscape
                     return;
                 }
 
-                if(currentPath == null || currentPath.Count == 0)
-                {
-                    currentPath = pathFinder.FindPath(new Point(pY, pX));
-                }
-
-                var p = currentPath.First();
-                d = p.direction;
-                switch (d)
-                {
-                    case 1:
-                        Console.WriteLine("UP");
-                        break;
-                    case 2:
-                        Console.WriteLine("RIGHT");
-                        break;
-                    case 3:
-                        Console.WriteLine("DOWN");
-                        break;
-                    case 4:
-                        Console.WriteLine("LEFT");
-                        break;
-                }
-                currentPath.Remove(p);
+                GetNextMove();
             }
 
             public void Init(Move move)
@@ -114,6 +93,10 @@ namespace MazeEscape
                         maze[top + j, left + i] = view[j][i];
                     }
                 }
+
+                ApplyVisit();
+
+                GetNextMove();
             }
 
             private void ApplyMove(Move move)
@@ -145,6 +128,71 @@ namespace MazeEscape
                         maze[pY + 1, pX - 1] = move.view[0][1];
                         break;
                 }
+
+                ApplyVisit();
+            }
+
+            private void ApplyVisit()
+            {
+                mazeVisited[pY, pX] = true;
+            }
+
+            private void GetNextMove()
+            {
+                if (currentPath == null || currentPath.Count == 0)
+                {
+                    currentPath = pathFinder.FindPath(new Point(pX, pY));
+                }
+
+                var p = currentPath.First();
+                WriteMoveDirection(d, p.direction);
+                d = p.direction;
+
+                currentPath.Remove(p);
+            }
+
+            private void WriteMoveDirection(int cD, int nD)
+            {
+                int c = cD, count = 0;
+                while(c != nD)
+                {
+                    c++;
+                    count++;
+                    if (c == 5) c = 1;
+                }
+
+                switch (count)
+                {
+                    case 0:
+                        Console.WriteLine("UP");
+                        break;
+                    case 1:
+                        Console.WriteLine("RIGHT");
+                        break;
+                    case 2:
+                        Console.WriteLine("DOWN");
+                        break;
+                    case 3:
+                        Console.WriteLine("LEFT");
+                        break;
+                }
+            }
+
+            private string PrintMaze()
+            {
+                var sb = new StringBuilder();
+
+                for (int i = 0; i < 60; i++)
+                {
+                    for (int j = 0; j < 60; j++)
+                    {
+                        sb.Append(maze[i, j]);
+                    }
+
+                    sb.Append(Environment.NewLine);
+                }
+
+                return sb.ToString();
             }
         }
 
@@ -164,7 +212,8 @@ namespace MazeEscape
             public char[][] view;
         }
 
-        private struct Point
+        [Serializable]
+        private class Point
         {
             public Point(int x, int y)
             {
@@ -196,6 +245,7 @@ namespace MazeEscape
             public int y;
         }
 
+        [Serializable]
         private struct PointAndDirection
         {
             public PointAndDirection(Point point, int direction)
@@ -208,6 +258,7 @@ namespace MazeEscape
             public int direction;
         }
 
+        [Serializable]
         private class PathFinder {
 
             public PathFinder(char[,] maze, bool[,] mazeVisits)
@@ -228,7 +279,7 @@ namespace MazeEscape
                 mazeEnqueued = new bool[60, 60];
                 mazeEnqueued[currentPoint.y, currentPoint.x] = true;
 
-                EnqueueInAllDirections(new List<PointAndDirection>());
+                EnqueueInAllDirections(new List<PointAndDirection>(), currentPoint);
 
                 return FindShortestPath();
             }
@@ -249,9 +300,9 @@ namespace MazeEscape
                 return null;
             }
 
-            private void EnqueueInAllDirections(List<PointAndDirection> path)
+            private void EnqueueInAllDirections(List<PointAndDirection> path, Point startPoint = null)
             {
-                var currentPoint = path.Last().point;
+                var currentPoint = startPoint ?? path.Last().point;
 
                 var up = currentPoint.Up();
                 var right = currentPoint.Right();
@@ -274,7 +325,7 @@ namespace MazeEscape
 
             private bool IsEnqueuable(Point p)
             {
-                return !mazeEnqueued[p.y - 1, p.x] && (maze[p.y, p.x] == '-' || maze[p.y, p.x] == 'e');
+                return !mazeEnqueued[p.y, p.x] && (maze[p.y, p.x] == '-' || maze[p.y, p.x] == 'e');
             }
 
             private bool IsTargetPoint(Point p)
