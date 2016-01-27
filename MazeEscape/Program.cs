@@ -273,7 +273,7 @@ namespace MazeEscape
             private bool[,] mazeVisits = new bool[60, 60];
             private bool[,] mazeEnqueued;
 
-            private int[] priority = new int[] { 4, 3, 1, 2 };
+            private int[] priority = new int[] { 4, 3, 2, 1 };
             private bool isPriorityFound = false;
 
             public List<PointAndDirection> FindPath(Point currentPoint)
