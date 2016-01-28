@@ -45,19 +45,24 @@ namespace CubeSummation
 
         private class Algorithm {
 
-            private int[][][] matrix;
+            private Slot[][][] matrix;
 
             public void Setup(int n)
             {
-                matrix = new int[n][][];
+                matrix = new Slot[n][][];
 
                 for (int i = 0; i < n; i++)
                 {
-                    matrix[i] = new int[n][];
+                    matrix[i] = new Slot[n][];
 
                     for (int j = 0; j < n; j++)
                     {
-                        matrix[i][j] = new int[n];
+                        matrix[i][j] = new Slot[n];
+
+                        for (int k = 0; k < n; k++)
+                        {
+                            matrix[i][j][k] = new Slot();
+                        }
                     }
                 }
             }
@@ -66,7 +71,16 @@ namespace CubeSummation
             {
                 if (command.Equals("UPDATE"))
                 {
-                    matrix[args[0] - 1][args[1] - 1][args[2] - 1] = args[3];
+                    var slotArray = matrix[args[0] - 1][args[1] - 1];
+                    var slot = slotArray[args[2] - 1];
+                    var diff = slot.Value - args[3];
+                    slot.Value -= diff;
+                    slot.Sum -= diff;
+                    for (int i = args[2]; i < matrix.Length; i++)
+                    {
+                        var nextSlot = slotArray[i];
+                        nextSlot.Sum -= diff;
+                    }
                 }
                 else
                 {
@@ -82,22 +96,31 @@ namespace CubeSummation
                 }
             }
 
-            private int CalculateSum(int x1, int x2, int y1, int y2, int z1, int z2)
+            private long CalculateSum(int x1, int x2, int y1, int y2, int z1, int z2)
             {
-                var sum = 0;
+                var sum = 0L;
 
                 for (int i = x1; i <= x2; i++)
                 {
                     for (int j = y1; j <= y2; j++)
                     {
-                        for (int k = z1; k <= z2; k++)
+                        var result = matrix[i][j][z2].Sum;
+
+                        if(z1 > 0)
                         {
-                            sum += matrix[i][j][k];
+                            result -= matrix[i][j][z1 - 1].Sum;
                         }
+
+                        sum += result;
                     }
                 }
 
                 return sum;
+            }
+
+            private class Slot {
+                public long Value;
+                public long Sum;
             }
         }
     }
