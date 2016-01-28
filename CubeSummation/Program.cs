@@ -15,9 +15,9 @@ namespace CubeSummation
 
             var a = new Algorithm();
 
-            var fs = new FileStream("output.txt", FileMode.Create);
-            var sw = new StreamWriter(fs);
-            Console.SetOut(sw);
+            //var fs = new FileStream("output.txt", FileMode.Create);
+            //var sw = new StreamWriter(fs);
+            //Console.SetOut(sw);
 
             for (int i = 0; i < t; i++)
             {
@@ -47,7 +47,7 @@ namespace CubeSummation
                 }
             }
 
-            sw.Flush();
+            //sw.Flush();
         }
 
         private class Algorithm {
