@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace CubeSummation
 {
@@ -14,6 +15,10 @@ namespace CubeSummation
 
             var a = new Algorithm();
 
+            var fs = new FileStream("output.txt", FileMode.Create);
+            var sw = new StreamWriter(fs);
+            Console.SetOut(sw);
+
             for (int i = 0; i < t; i++)
             {
                 var segments = Console.ReadLine().Split(' ');
@@ -21,7 +26,7 @@ namespace CubeSummation
                 var m = Convert.ToInt32(segments[1]);
 
                 a.Setup(n);
-
+                                
                 for (int j = 0; j < m; j++)
                 {
                     var cs = Console.ReadLine().Split(' ');
@@ -41,6 +46,8 @@ namespace CubeSummation
                     a.Process(c, new int[] { a1, a2, a3, a4, a5, a6 });
                 }
             }
+
+            sw.Flush();
         }
 
         private class Algorithm {
